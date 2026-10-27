@@ -1,0 +1,2486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nexora — Admin Management Portal</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+
+  <!-- Security & Search Engine Blocking -->
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <meta http-equiv="X-Frame-Options" content="DENY" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700;900&family=Raleway:wght@600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-raleway: 'Raleway', sans-serif;
+
+      --bg-dark: #0b0f19;
+      --bg-surface: #121826;
+      --bg-surface-elevated: #1a2336;
+      --bg-input: #0e1422;
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-focus: #2f69ff;
+
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+
+      --accent-blue: #2f69ff;
+      --accent-blue-hover: #1d52e0;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --accent-purple: #a855f7;
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+      --radius-xl: 24px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.5;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.2);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 99px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* ==========================================================================
+       LOGIN VIEW
+       ========================================================================== */
+    #login-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: radial-gradient(circle at top center, #1e293b 0%, #0b0f19 70%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-glow-1 {
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(47, 105, 255, 0.15) 0%, transparent 70%);
+      top: -100px;
+      left: 10%;
+      pointer-events: none;
+    }
+    .login-glow-2 {
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
+      bottom: -150px;
+      right: 10%;
+      pointer-events: none;
+    }
+
+    .login-box {
+      width: 100%;
+      max-width: 440px;
+      background: rgba(18, 24, 38, 0.85);
+      border: 1px solid var(--border-subtle);
+      backdrop-filter: blur(20px);
+      border-radius: var(--radius-xl);
+      padding: 40px 32px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+      position: relative;
+      z-index: 10;
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .login-brand {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: 0.18em;
+      color: #ffffff;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .brand-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--accent-blue);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--accent-blue);
+    }
+    .login-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 8px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 13px 16px;
+      font-size: 14px;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      transition: all 0.2s;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      outline: none;
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(47, 105, 255, 0.25);
+    }
+
+    .btn-primary {
+      width: 100%;
+      background: linear-gradient(135deg, #2f69ff 0%, #1742c4 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 14px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+      box-shadow: 0 4px 14px rgba(47, 105, 255, 0.35);
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #3d75ff 0%, #1e4de0 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(47, 105, 255, 0.45);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      border-radius: var(--radius-md);
+      padding: 10px 18px;
+      font-size: 13.5px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-danger {
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid rgba(244, 63, 94, 0.3);
+      color: #fb7185;
+      border-radius: var(--radius-md);
+      padding: 8px 14px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-danger:hover {
+      background: rgba(244, 63, 94, 0.25);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 10px 20px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .btn-success:hover {
+      background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+    }
+
+    .error-banner {
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid rgba(244, 63, 94, 0.3);
+      color: #fda4af;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    /* ==========================================================================
+       ADMIN PORTAL DASHBOARD VIEW
+       ========================================================================== */
+    #dashboard-screen {
+      display: none;
+      min-height: 100vh;
+      flex-direction: column;
+    }
+
+    /* Top Navigation Bar */
+    .admin-navbar {
+      height: 72px;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .admin-nav-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .admin-portal-badge {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      background: rgba(47, 105, 255, 0.15);
+      border: 1px solid rgba(47, 105, 255, 0.3);
+      color: #7096ff;
+      padding: 4px 10px;
+      border-radius: 99px;
+      font-weight: 600;
+    }
+    .admin-nav-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: #94a3b8;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 6px 14px;
+      border-radius: 99px;
+      border: 1px solid var(--border-subtle);
+    }
+    .pulse-green {
+      width: 7px;
+      height: 7px;
+      background: var(--accent-emerald);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent-emerald);
+    }
+
+    /* Tabs Bar */
+    .admin-tabs-bar {
+      background: #0e1422;
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0 32px;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+    }
+    .admin-tab {
+      padding: 16px 20px;
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      background: none;
+      cursor: pointer;
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      transition: color 0.2s;
+    }
+    .admin-tab:hover {
+      color: var(--text-main);
+    }
+    .admin-tab.active {
+      color: #ffffff;
+    }
+    .admin-tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--accent-blue);
+      box-shadow: 0 0 10px var(--accent-blue);
+    }
+    .tab-badge {
+      background: var(--accent-blue);
+      color: #ffffff;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 99px;
+    }
+
+    /* Main Content Area */
+    .admin-content {
+      flex: 1;
+      padding: 32px;
+      max-width: 1380px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+    .tab-panel.active {
+      display: block;
+      animation: fadeIn 0.25s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Header for each tab */
+    .panel-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 28px;
+      gap: 16px;
+    }
+    .panel-title {
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 4px;
+    }
+    .panel-desc {
+      color: var(--text-muted);
+      font-size: 14px;
+      max-width: 680px;
+    }
+
+    /* Stat Cards Row */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 18px;
+      margin-bottom: 32px;
+    }
+    .stat-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .stat-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+    }
+    .stat-value {
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+    .stat-meta {
+      font-size: 12px;
+      color: var(--accent-emerald);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Cards & Containers */
+    .data-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    /* Inquiries Table / Cards */
+    .inquiries-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+    .inquiry-card {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 22px 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: all 0.2s;
+    }
+    .inquiry-card:hover {
+      border-color: rgba(255, 255, 255, 0.18);
+      transform: translateY(-2px);
+    }
+    .inquiry-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .client-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+    .inquiry-time {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      color: var(--text-dim);
+    }
+    .inquiry-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .badge-service {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 6px;
+      background: rgba(47, 105, 255, 0.15);
+      color: #93b3ff;
+      border: 1px solid rgba(47, 105, 255, 0.25);
+    }
+    .badge-budget {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 6px;
+      background: rgba(16, 185, 129, 0.15);
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+    .badge-status {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+    .badge-status.new {
+      background: rgba(245, 158, 11, 0.18);
+      color: #fcd34d;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+    .badge-status.contacted {
+      background: rgba(47, 105, 255, 0.18);
+      color: #93b3ff;
+      border: 1px solid rgba(47, 105, 255, 0.3);
+    }
+
+    .inquiry-contact-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-size: 13.5px;
+      color: var(--text-muted);
+    }
+    .inquiry-contact-links a {
+      color: var(--text-main);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+    }
+    .inquiry-contact-links a:hover {
+      color: var(--accent-blue);
+      text-decoration: underline;
+    }
+
+    .inquiry-message {
+      background: rgba(0, 0, 0, 0.25);
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      font-size: 13.5px;
+      color: #cbd5e1;
+      border-left: 3px solid var(--accent-blue);
+    }
+
+    .inquiry-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-subtle);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    /* Services Cards Manager Grid */
+    .services-manage-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 22px;
+    }
+    .service-edit-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: 26px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+    .service-edit-tag {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 6px;
+      display: inline-block;
+      margin-bottom: 12px;
+    }
+    .service-edit-title {
+      font-family: var(--font-raleway);
+      font-size: 20px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+    .service-edit-price {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--accent-emerald);
+      margin: 12px 0 6px 0;
+    }
+
+    /* Packages Manager Styles */
+    .pkg-category-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .pkg-cat-btn {
+      padding: 10px 18px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 99px;
+      color: var(--text-muted);
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .pkg-cat-btn:hover {
+      color: #ffffff;
+      background: var(--bg-surface-elevated);
+    }
+    .pkg-cat-btn.active {
+      background: var(--accent-blue);
+      color: #ffffff;
+      border-color: var(--accent-blue);
+      box-shadow: 0 4px 14px rgba(47, 105, 255, 0.4);
+    }
+
+    .packages-edit-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      gap: 22px;
+    }
+    .pkg-edit-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .pkg-edit-card.popular {
+      border-color: rgba(47, 105, 255, 0.6);
+      box-shadow: 0 0 25px rgba(47, 105, 255, 0.15);
+    }
+    .popular-tag {
+      position: absolute;
+      top: -12px;
+      right: 24px;
+      background: var(--accent-blue);
+      color: #ffffff;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      padding: 4px 12px;
+      border-radius: 99px;
+    }
+
+    /* Modal / Drawer */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.open {
+      display: flex;
+    }
+    .modal-container {
+      background: var(--bg-surface);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: var(--radius-xl);
+      width: 100%;
+      max-width: 620px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 32px;
+      position: relative;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+      animation: modalSlide 0.25s ease-out;
+    }
+    @keyframes modalSlide {
+      from { transform: scale(0.95) translateY(10px); opacity: 0; }
+      to { transform: scale(1) translateY(0); opacity: 1; }
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .modal-title {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+    .btn-close-modal {
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      color: var(--text-muted);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+    .btn-close-modal:hover {
+      background: rgba(255, 255, 255, 0.18);
+      color: #fff;
+    }
+
+    /* Toast Notification */
+    #toast-notification {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      background: #10b981;
+      color: #ffffff;
+      padding: 14px 22px;
+      border-radius: var(--radius-md);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      font-weight: 600;
+      font-size: 14px;
+      display: none;
+      align-items: center;
+      gap: 10px;
+      z-index: 200;
+      animation: slideToast 0.3s ease-out;
+    }
+    @keyframes slideToast {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .admin-navbar {
+        padding: 0 16px;
+      }
+      .admin-tabs-bar {
+        padding: 0 16px;
+      }
+      .admin-content {
+        padding: 20px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       LOGIN SCREEN
+       ========================================================================== -->
+  <div id="login-screen">
+    <div class="login-glow-1"></div>
+    <div class="login-glow-2"></div>
+
+    <div class="login-box">
+      <div class="login-header">
+        <div class="login-brand">
+          <span>NEXORA</span>
+          <span class="brand-dot"></span>
+        </div>
+        <p class="login-sub">Admin Control & Management Portal</p>
+      </div>
+
+      <div id="login-error" class="error-banner"></div>
+
+      <form id="admin-login-form" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label class="form-label">Admin Phone Number</label>
+          <input type="tel" id="login-phone" class="form-input" placeholder="8595581933" required autocomplete="tel" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Admin Security Password</label>
+          <input type="password" id="login-password" class="form-input" placeholder="••••••••" required autocomplete="current-password" />
+        </div>
+
+        <button type="submit" class="btn-primary" style="margin-top: 10px;">
+          <span>Authenticate & Access Dashboard</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+      </form>
+
+      <div style="margin-top: 24px; text-align: center; font-size: 12px; color: var(--text-dim);">
+        <a href="index.html" style="color: var(--text-muted); text-decoration: none;">← Return to Main Website</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       ADMIN DASHBOARD
+       ========================================================================== -->
+  <div id="dashboard-screen">
+
+    <!-- Top Navbar -->
+    <header class="admin-navbar">
+      <div class="admin-nav-left">
+        <div class="login-brand" style="font-size: 20px;">
+          <span>NEXORA</span>
+          <span class="brand-dot"></span>
+        </div>
+        <span class="admin-portal-badge">Admin Dashboard</span>
+      </div>
+
+      <div class="admin-nav-right">
+        <div class="status-pill">
+          <span class="pulse-green"></span>
+          <span>Authorized Admin <strong>Verified</strong></span>
+        </div>
+
+        <a href="index.html" target="_blank" class="btn-secondary" style="font-size: 13px; padding: 7px 14px;">
+          <span>↗ Live Website</span>
+        </a>
+
+        <button onclick="handleLogout()" class="btn-danger">
+          Logout
+        </button>
+      </div>
+    </header>
+
+    <!-- Tabs Navigation -->
+    <div class="admin-tabs-bar">
+      <button class="admin-tab active" onclick="switchTab('inquiries')">
+        <span>📥 Client Inquiries</span>
+        <span id="inquiries-counter-badge" class="tab-badge">0</span>
+      </button>
+
+      <button class="admin-tab" onclick="switchTab('services')">
+        <span>💼 Work & Service Cards</span>
+        <span id="services-counter-badge" class="tab-badge" style="background:#475569;">5</span>
+      </button>
+
+      <button class="admin-tab" onclick="switchTab('pricing')">
+        <span>🏷️ Pricing Packages</span>
+      </button>
+
+      <button class="admin-tab" onclick="switchTab('contacts')">
+        <span>📞 Contact & Phone Numbers</span>
+      </button>
+
+      <button class="admin-tab" onclick="switchTab('backup')">
+        <span>💾 Backup & Reset</span>
+      </button>
+    </div>
+
+    <!-- Main Content Panel -->
+    <main class="admin-content">
+
+      <!-- ====================================================================
+           TAB 1: CLIENT INQUIRIES & LEADS
+           ==================================================================== -->
+      <section id="tab-inquiries" class="tab-panel active">
+        <div class="panel-header">
+          <div>
+            <h1 class="panel-title">Client Inquiries & Leads</h1>
+            <p class="panel-desc">All messages, leads, and contact numbers submitted through the website inquiry form.</p>
+          </div>
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button id="btn-debug-test-lead" onclick="addTestInquiry()" class="btn-secondary" style="font-size:13px; display:none;">
+              <span>➕ Add Test Lead</span>
+            </button>
+            <button onclick="exportInquiriesCSV()" class="btn-secondary" style="font-size:13px;">
+              <span>📥 Export CSV</span>
+            </button>
+            <button onclick="clearAllInquiries()" class="btn-danger" style="font-size:13px;">
+              <span>Clear All</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Stat Row -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <span class="stat-label">Total Inquiries Received</span>
+            <span id="stat-total-inquiries" class="stat-value">0</span>
+            <span class="stat-meta">Lifetime lead count</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">New / Uncontacted</span>
+            <span id="stat-new-inquiries" class="stat-value" style="color:var(--accent-amber);">0</span>
+            <span class="stat-meta" style="color:var(--accent-amber);">Awaiting follow-up</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Active Contact Line</span>
+            <span id="stat-contact-phone" class="stat-value" style="font-size:22px; margin-top:6px;">+91 85955 81933</span>
+            <span class="stat-meta">Inquiries routed here</span>
+          </div>
+        </div>
+
+        <!-- Inquiries List Container -->
+        <div id="inquiries-list-container" class="inquiries-grid">
+          <!-- Populated via JS -->
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           TAB 2: WORK & SERVICES CARDS (MAIN PAGE)
+           ==================================================================== -->
+      <section id="tab-services" class="tab-panel">
+        <div class="panel-header">
+          <div>
+            <h1 class="panel-title">Main Page Work & Service Cards</h1>
+            <p class="panel-desc">
+              Manage the 5 service cards appearing on your homepage. Change starting prices, deliverables, titles, or add brand new work categories.
+            </p>
+          </div>
+
+          <button onclick="openNewServiceModal()" class="btn-success">
+            <span>➕ Add New Work / Service Card</span>
+          </button>
+        </div>
+
+        <div id="services-cards-container" class="services-manage-grid">
+          <!-- Populated via JS -->
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           TAB 3: PRICING & PACKAGES
+           ==================================================================== -->
+      <section id="tab-pricing" class="tab-panel">
+        <div class="panel-header">
+          <div>
+            <h1 class="panel-title">Detailed Pricing Packages</h1>
+            <p class="panel-desc">
+              Edit the exact Starter, Professional, and Premium packages for each discipline. Changing prices here reflects immediately on the main site.
+            </p>
+          </div>
+        </div>
+
+        <!-- Category Tabs -->
+        <div class="pkg-category-nav">
+          <button class="pkg-cat-btn active" data-cat="web-development" onclick="switchPricingCategory('web-development')">Web Development</button>
+          <button class="pkg-cat-btn" data-cat="cybersecurity" onclick="switchPricingCategory('cybersecurity')">Cybersecurity</button>
+          <button class="pkg-cat-btn" data-cat="video-production" onclick="switchPricingCategory('video-production')">Video Production</button>
+          <button class="pkg-cat-btn" data-cat="video-editing" onclick="switchPricingCategory('video-editing')">Video Editing</button>
+          <button class="pkg-cat-btn" data-cat="photo-editing" onclick="switchPricingCategory('photo-editing')">Photo Editing & Design</button>
+        </div>
+
+        <!-- Packages Tiers Row -->
+        <div id="packages-cards-container" class="packages-edit-row">
+          <!-- Populated via JS -->
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           TAB 4: CONTACT & PHONE NUMBERS
+           ==================================================================== -->
+      <section id="tab-contacts" class="tab-panel">
+        <div class="panel-header">
+          <div>
+            <h1 class="panel-title">Agency Contact & Direct Phone Numbers</h1>
+            <p class="panel-desc">
+              Update your direct call phone number, WhatsApp contact number, email, and working hours. Any change here automatically updates the header pills, hero action buttons, footer, and inquiry form on the main website.
+            </p>
+          </div>
+        </div>
+
+        <div class="data-card" style="max-width: 800px;">
+          <form id="contact-settings-form" onsubmit="saveContactSettings(event)">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px;">
+              <div class="form-group">
+                <label class="form-label">Direct Call Phone Number (Display Text)</label>
+                <input type="text" id="setting-direct-phone" class="form-input" value="+91 85955 81933" required />
+                <span style="font-size:11.5px; color:var(--text-dim); margin-top:4px; display:block;">Example: +91 85955 81933</span>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Direct Call Phone (Digits Only for Dialing)</label>
+                <input type="text" id="setting-direct-phone-clean" class="form-input" value="8595581933" required />
+                <span style="font-size:11.5px; color:var(--text-dim); margin-top:4px; display:block;">For tel: links (e.g. 8595581933 or +918595581933)</span>
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px;">
+              <div class="form-group">
+                <label class="form-label">WhatsApp Number (Display Text)</label>
+                <input type="text" id="setting-whatsapp-phone" class="form-input" value="+91 87458 44797" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">WhatsApp Number (Country Code + Digits for Link)</label>
+                <input type="text" id="setting-whatsapp-phone-clean" class="form-input" value="918745844797" required />
+                <span style="font-size:11.5px; color:var(--text-dim); margin-top:4px; display:block;">For wa.me link (e.g. 918745844797)</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Official Studio Email</label>
+              <input type="email" id="setting-email" class="form-input" value="webdevelopersahil09@gmail.com" required />
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px;">
+              <div class="form-group">
+                <label class="form-label">Location / Base</label>
+                <input type="text" id="setting-location" class="form-input" value="Bengaluru / Remote Global Delivery" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Operating Hours</label>
+                <input type="text" id="setting-hours" class="form-input" value="Mon – Sat: 9:00 AM – 8:00 PM IST" required />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Hero Availability Badge</label>
+              <input type="text" id="setting-badge" class="form-input" value="OPEN FOR SELECT PROJECTS · Q3/Q4 ONBOARDING" required />
+            </div>
+
+            <div style="display:flex; gap:12px; margin-top:24px; padding-top:20px; border-top:1px solid var(--border-subtle);">
+              <button type="submit" class="btn-success">
+                <span>💾 Save All Contact Information</span>
+              </button>
+              <button type="button" onclick="restoreDefaultContacts()" class="btn-secondary">
+                <span>🔄 Restore Default Numbers</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           TAB 5: BACKUP & RESET
+           ==================================================================== -->
+      <section id="tab-backup" class="tab-panel">
+        <div class="panel-header">
+          <div>
+            <h1 class="panel-title">Data Backup & Factory Reset</h1>
+            <p class="panel-desc">Download a complete snapshot of all inquiries, customized pricing, and services or restore everything back to factory state.</p>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:24px;">
+          <div class="data-card">
+            <h3 style="font-size:18px; margin-bottom:12px;">Export Full Backup</h3>
+            <p style="color:var(--text-muted); font-size:13.5px; margin-bottom:20px;">
+              Download a complete JSON file containing all saved inquiries, customized prices, services, and contact settings.
+            </p>
+            <button onclick="exportFullBackupJSON()" class="btn-secondary">
+              <span>📥 Download Backup (JSON)</span>
+            </button>
+          </div>
+
+          <div class="data-card" style="border-color:rgba(244, 63, 94, 0.2);">
+            <h3 style="font-size:18px; color:#fb7185; margin-bottom:12px;">Restore Factory Defaults</h3>
+            <p style="color:var(--text-muted); font-size:13.5px; margin-bottom:20px;">
+              Reset all services, prices, and contact numbers back to the original studio settings. (Inquiries will not be deleted).
+            </p>
+            <button onclick="restoreAllFactoryDefaults()" class="btn-danger">
+              <span>⚠️ Reset All Prices & Services</span>
+            </button>
+          </div>
+
+          <div class="data-card" style="border-color:rgba(47, 105, 255, 0.3);">
+            <h3 style="font-size:18px; color:#93b3ff; margin-bottom:12px;">🛡️ Security & Credential Generator</h3>
+            <p style="color:var(--text-muted); font-size:13.5px; margin-bottom:14px;">
+              Rotate your admin password or phone number. Plaintext passwords are never stored—generate a new salted SHA-256 hash here.
+            </p>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <input type="tel" id="sec-input-phone" class="form-input" placeholder="New Admin Phone (e.g. 8595581933)" style="font-size:12px; padding:8px 12px;" />
+              <input type="password" id="sec-input-pass" class="form-input" placeholder="New Admin Password" style="font-size:12px; padding:8px 12px;" />
+              <button type="button" onclick="generateNewCredentialHashes()" class="btn-primary" style="padding:8px 14px; font-size:12.5px; justify-content:center;">
+                <span>🔐 Generate Salted Hashes</span>
+              </button>
+              <div id="sec-hash-output" style="display:none; margin-top:8px; padding:10px; background:rgba(0,0,0,0.4); border-radius:8px; border:1px solid rgba(255,255,255,0.1); font-family:var(--font-mono); font-size:11px; word-break:break-all;"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL: EDIT / ADD SERVICE CARD
+       ========================================================================== -->
+  <div id="service-modal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2 id="service-modal-title" class="modal-title">Edit Service Card</h2>
+        <button onclick="closeServiceModal()" class="btn-close-modal">✕</button>
+      </div>
+
+      <form id="service-form" onsubmit="saveServiceCard(event)">
+        <input type="hidden" id="service-edit-id" />
+
+        <div class="form-group">
+          <label class="form-label">Service Name / Title</label>
+          <input type="text" id="service-input-name" class="form-input" placeholder="e.g. Web Development" required />
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+          <div class="form-group">
+            <label class="form-label">Category Tag Text</label>
+            <input type="text" id="service-input-tag" class="form-input" placeholder="e.g. Frontend & Full-Stack" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Starting Price Display</label>
+            <input type="text" id="service-input-price" class="form-input" placeholder="e.g. ₹14,999" required />
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+          <div class="form-group">
+            <label class="form-label">Price Note</label>
+            <input type="text" id="service-input-note" class="form-input" placeholder="Starting price" value="Starting price" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Pricing Tab Link</label>
+            <select id="service-input-tab" class="form-select">
+              <option value="web-development">Web Development</option>
+              <option value="cybersecurity">Cybersecurity</option>
+              <option value="video-production">Video Production</option>
+              <option value="video-editing">Video Editing</option>
+              <option value="photo-editing">Photo Editing & Design</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea id="service-input-desc" class="form-textarea" rows="3" placeholder="Brief summary of this service..." required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Deliverables Checklist (One per line)</label>
+          <textarea id="service-input-deliverables" class="form-textarea" rows="4" placeholder="Custom responsive design&#10;Fluid animations & fast load speeds&#10;Accessible semantic markup"></textarea>
+          <span style="font-size:11.5px; color:var(--text-dim); margin-top:4px; display:block;">Each line will appear with a ✓ checkmark on the card.</span>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:24px; padding-top:18px; border-top:1px solid var(--border-subtle);">
+          <button type="button" onclick="closeServiceModal()" class="btn-secondary">Cancel</button>
+          <button type="submit" class="btn-success">Save Service Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL: EDIT PRICING PACKAGE TIER
+       ========================================================================== -->
+  <div id="pkg-modal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2 id="pkg-modal-title" class="modal-title">Edit Package Tier</h2>
+        <button onclick="closePkgModal()" class="btn-close-modal">✕</button>
+      </div>
+
+      <form id="pkg-form" onsubmit="savePackageTier(event)">
+        <input type="hidden" id="pkg-edit-cat" />
+        <input type="hidden" id="pkg-edit-index" />
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+          <div class="form-group">
+            <label class="form-label">Tier Name</label>
+            <input type="text" id="pkg-input-tier" class="form-input" placeholder="e.g. Starter, Professional, Premium" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Price (INR)</label>
+            <input type="text" id="pkg-input-price" class="form-input" placeholder="e.g. ₹34,999" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Package Title / Name</label>
+          <input type="text" id="pkg-input-name" class="form-input" placeholder="e.g. Multi-Page Business Website" required />
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+          <div class="form-group">
+            <label class="form-label">Price Subtitle / Note</label>
+            <input type="text" id="pkg-input-note" class="form-input" placeholder="e.g. Most popular for established businesses" />
+          </div>
+
+          <div class="form-group" style="display:flex; align-items:center; padding-top:24px;">
+            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13.5px; color:var(--text-main);">
+              <input type="checkbox" id="pkg-input-popular" style="width:18px; height:18px; accent-color:var(--accent-blue);" />
+              <span>Mark as "Most Popular"</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Short Description</label>
+          <textarea id="pkg-input-desc" class="form-textarea" rows="2" placeholder="Who is this package best suited for?" required></textarea>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+          <div class="form-group">
+            <label class="form-label">Estimated Delivery Time</label>
+            <input type="text" id="pkg-input-delivery" class="form-input" placeholder="e.g. 2–3 Weeks" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Revisions Included</label>
+            <input type="text" id="pkg-input-revisions" class="form-input" placeholder="e.g. 3 Rounds of structured revisions" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Deliverables Checklist (One item per line)</label>
+          <textarea id="pkg-input-deliverables" class="form-textarea" rows="5" placeholder="Bespoke UI design&#10;Interactive transitions&#10;Full source code handover"></textarea>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:24px; padding-top:18px; border-top:1px solid var(--border-subtle);">
+          <button type="button" onclick="closePkgModal()" class="btn-secondary">Cancel</button>
+          <button type="submit" class="btn-success">Save Package Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast-notification">
+    <span id="toast-message">✓ Changes Saved Successfully!</span>
+  </div>
+
+  <!-- ==========================================================================
+       JAVASCRIPT APPLICATION LOGIC
+       ========================================================================== -->
+  <script>
+    // ==========================================================================
+    // CRYPTOGRAPHIC CREDENTIALS CONFIGURATION (ZERO PLAINTEXT SECRETS)
+    // ==========================================================================
+    // Pre-computed salted SHA-256 hashes - Plaintext credentials are NEVER stored
+    const AUTH_CONFIG = {
+      salt: 'nexora_salt_9e3b7c84f1a26d',
+      phoneHash: '3849703be842a429f3bd7d19c6f43749b36f6d8f40c84f8592bb79e7eaee3534',
+      passHash: 'c8a2ea9af5d8708e53ad0e6f8276e0ff5d47d72b7e59e238f2d46c181bafbd9b',
+      maxAttempts: 5,
+      lockoutDurationMs: 15 * 60 * 1000, // 15 minutes lockout on 5 consecutive failures
+      sessionDurationMs: 2 * 60 * 60 * 1000 // 2 hours secure session expiry
+    };
+
+    const DEBUG_MODE = false; // Production security mode: disabled debug triggers
+
+    // DEFAULT DATA (Initial Fallback)
+    const DEFAULT_CONTACTS = {
+      directPhone: '+91 85955 81933',
+      directPhoneClean: '8595581933',
+      whatsappPhone: '+91 87458 44797',
+      whatsappPhoneClean: '918745844797',
+      officialEmail: 'webdevelopersahil09@gmail.com',
+      location: 'Bengaluru / Remote Global Delivery',
+      workingHours: 'Mon – Sat: 9:00 AM – 8:00 PM IST',
+      availabilityBadge: 'OPEN FOR SELECT PROJECTS · Q3/Q4 ONBOARDING'
+    };
+
+    const DEFAULT_SERVICES = [
+      {
+        id: 'web-dev',
+        tag: 'Frontend & Full-Stack',
+        tagBg: 'rgba(47, 105, 255, 0.15)',
+        tagColor: '#93b3ff',
+        name: 'Web Development',
+        desc: 'High-performance, accessible, and responsive websites. From high-converting campaign landing pages to multi-page corporate business portals and web applications.',
+        startingPrice: '₹14,999',
+        priceNote: 'Starting price',
+        categoryTab: 'web-development',
+        deliverables: [
+          'Custom responsive design (mobile, tablet, desktop)',
+          'Fluid animations & fast load speeds (95+ Lighthouse)',
+          'Accessible semantic markup & technical SEO setup'
+        ]
+      },
+      {
+        id: 'cybersecurity',
+        tag: 'Assessments & Hardening',
+        tagBg: 'rgba(14, 165, 233, 0.15)',
+        tagColor: '#38bdf8',
+        name: 'Authorized Cybersecurity',
+        desc: 'Ethical vulnerability assessments and defensive hardening to safeguard your web assets against configuration oversights and common threat vectors before adversaries find them.',
+        startingPrice: '₹19,999',
+        priceNote: 'Starting price',
+        categoryTab: 'cybersecurity',
+        deliverables: [
+          'OWASP Top 10 web assessment checklist',
+          'SSL/TLS, DNS & security headers audit',
+          'Detailed technical remediation roadmap'
+        ]
+      },
+      {
+        id: 'video-prod',
+        tag: 'Cinematic Production',
+        tagBg: 'rgba(244, 63, 94, 0.15)',
+        tagColor: '#fb7185',
+        name: 'Video Shooting & Production',
+        desc: 'On-location and studio video shooting for brand stories, commercial product showcases, founder spotlights, and batch social content with professional 4K cinema cameras.',
+        startingPrice: '₹24,999',
+        priceNote: 'Starting price',
+        categoryTab: 'video-production',
+        deliverables: [
+          'Multi-camera 4K cinema gear & wireless audio',
+          'Professional directional lighting & stabilization',
+          'Director on set for interview coaching & pacing'
+        ]
+      },
+      {
+        id: 'video-edit',
+        tag: 'Post-Production & Motion',
+        tagBg: 'rgba(168, 85, 247, 0.15)',
+        tagColor: '#c084fc',
+        name: 'Video Editing & Motion',
+        desc: 'High-retention vertical edits, kinetic subtitles, sound design, Foley effects, and cinematic color grading for Instagram Reels, YouTube Shorts, podcasts, and long-form videos.',
+        startingPrice: '₹9,999',
+        priceNote: 'Starting price',
+        categoryTab: 'video-editing',
+        deliverables: [
+          'Pacing-perfect cuts eliminating dead air & filler',
+          'Dynamic animated captions & sound effects',
+          'Licensed commercial music & cinema color grade'
+        ]
+      },
+      {
+        id: 'photo-edit',
+        tag: 'Visual Craft & Branding',
+        tagBg: 'rgba(16, 185, 129, 0.15)',
+        tagColor: '#6ee7b7',
+        name: 'Photo Editing & Retouching',
+        desc: 'Commercial photo retouching, e-commerce product staging, high-CTR YouTube thumbnails, marketing collateral posters, and multi-platform social media creative suites.',
+        startingPrice: '₹7,999',
+        priceNote: 'Starting price',
+        categoryTab: 'photo-editing',
+        deliverables: [
+          'High-end frequency separation skin retouching',
+          'Product cutouts, shadows & reflection mapping',
+          'Layered source files (PSD) & web-ready WebP'
+        ]
+      }
+    ];
+
+    const DEFAULT_PACKAGES = {
+      'web-development': [
+        {
+          tier: 'Starter',
+          name: 'Single-Page Landing Website',
+          priceINR: '₹14,999',
+          priceNote: 'Starting rate / Base scope',
+          isPopular: false,
+          description: 'Ideal for product launches, events, or service professionals needing a high-converting single page.',
+          scope: '1 Long-form landing page with up to 6 sections',
+          deliverables: [
+            'Custom responsive design (mobile, tablet, desktop)',
+            'Modern hero with animated gradient accents',
+            'Contact & lead capture form integration',
+            'Basic on-page SEO meta tags',
+            'Fast load speed optimization',
+            'Deployment to client domain & hosting'
+          ],
+          revisions: '2 Rounds of design revisions',
+          deliveryTime: '5–8 Business Days',
+          highlightBenefit: 'Fast turnaround with zero bloat'
+        },
+        {
+          tier: 'Professional',
+          name: 'Multi-Page Business Website',
+          priceINR: '₹34,999',
+          priceNote: 'Most popular for established businesses',
+          isPopular: true,
+          description: 'Comprehensive online presence for small to medium businesses requiring structured information architecture.',
+          scope: 'Up to 5 custom responsive pages (Home, About, Services, Portfolio, Contact)',
+          deliverables: [
+            'Bespoke editorial UI design tailored to brand identity',
+            'Interactive components & fluid transitions',
+            'Dedicated service detail layouts & contact enquiry handling',
+            'Advanced SEO structure, sitemap & OpenGraph configuration',
+            'WhatsApp click-to-chat & interactive Google Map integration',
+            'Full source code handover & deployment support'
+          ],
+          revisions: '3 Rounds of structured revisions',
+          deliveryTime: '2–3 Weeks',
+          highlightBenefit: 'Complete multi-page professional identity'
+        },
+        {
+          tier: 'Premium',
+          name: 'Advanced Custom Web Experience',
+          priceINR: '₹69,999',
+          priceNote: 'Tailored for scale & custom functionality',
+          isPopular: false,
+          description: 'For brands that demand state-of-the-art interactive design, extensive page hierarchy, or custom features.',
+          scope: 'Up to 10+ pages, custom animations & advanced architecture',
+          deliverables: [
+            'Art-directed visual identity with bespoke illustrations & 3D mockups',
+            'Custom CMS integration or headless database connectivity',
+            'Dynamic multi-filter project galleries & search capability',
+            'Comprehensive performance tuning (95+ Lighthouse score)',
+            'Strict accessibility (WCAG AA) & security hardening baseline',
+            '30 Days post-launch priority maintenance & bug support'
+          ],
+          revisions: '4 Rounds of revisions + priority staging',
+          deliveryTime: '4–6 Weeks',
+          highlightBenefit: 'Uncompromising design craft & scale'
+        }
+      ],
+      'cybersecurity': [
+        {
+          tier: 'Starter',
+          name: 'Basic Authorized Security Review',
+          priceINR: '₹19,999',
+          priceNote: 'Baseline verification for small web setups',
+          isPopular: false,
+          description: 'Essential baseline check for public-facing websites to identify open misconfigurations and critical vulnerabilities.',
+          scope: '1 Target Domain / Website instance',
+          deliverables: [
+            'Domain ownership verification & scoping',
+            'Automated non-destructive vulnerability sweep',
+            'SSL/TLS, HTTP security headers & DNS hygiene check',
+            'Information leakage & server banner inspection',
+            'Brief PDF Summary Report of notable exposures'
+          ],
+          revisions: '1 Clarification call & Q&A session',
+          deliveryTime: '3–5 Business Days',
+          highlightBenefit: 'Quick visibility into obvious risks'
+        },
+        {
+          tier: 'Professional',
+          name: 'Broader Assessment & Written Findings',
+          priceINR: '₹44,999',
+          priceNote: 'Recommended for active web applications',
+          isPopular: true,
+          description: 'Comprehensive manual and automated evaluation of web application layers, authentication, and server configurations.',
+          scope: '1 Web Application with up to 2 distinct user roles',
+          deliverables: [
+            'Full OWASP Top 10 web assessment checklist',
+            'Authentication & session management logic checks',
+            'Input validation, XSS, CSRF & injection analysis',
+            'Executive Summary + Detailed Technical Findings report',
+            'CVSS severity ratings & step-by-step developer remediation steps',
+            '1 Follow-up re-test on reported critical/high findings'
+          ],
+          revisions: '2 Technical alignment review sessions',
+          deliveryTime: '7–10 Business Days',
+          highlightBenefit: 'In-depth actionable security roadmap'
+        },
+        {
+          tier: 'Premium',
+          name: 'Extended Assessment & Remediation Guidance',
+          priceINR: '₹89,999',
+          priceNote: 'Enterprise & high-transaction digital assets',
+          isPopular: false,
+          description: 'Exhaustive defensive evaluation including API endpoints, cloud configurations, and active developer remediation guidance.',
+          scope: 'Multi-endpoint web platform / Custom APIs & infrastructure',
+          deliverables: [
+            'Deep manual application security review & business logic testing',
+            'REST API security assessment (token auth, rate limits, CORS)',
+            'Cloud infrastructure & server baseline hardening audit',
+            'Prioritized developer remediation workshop (virtual)',
+            'Full re-testing of all verified findings within 30 days',
+            'Official post-remediation assessment summary letter'
+          ],
+          revisions: 'Ongoing developer support during fix window',
+          deliveryTime: '2–3 Weeks',
+          highlightBenefit: 'End-to-end guidance from discovery to fix'
+        }
+      ],
+      'video-production': [
+        {
+          tier: 'Starter',
+          name: 'Simple Short Shoot',
+          priceINR: '₹24,999',
+          priceNote: 'Half-day single location shoot',
+          isPopular: false,
+          description: 'Ideal for brief founder messages, quick product demos, or batch recording of vertical social reels.',
+          scope: 'Up to 3 hours on location / 1 Videographer',
+          deliverables: [
+            'Pre-shoot shot list planning call',
+            'Single 4K cinema camera setup with prime lens',
+            'Studio LED key & fill lighting kit',
+            'Wireless lavalier microphone audio capture',
+            'Organized raw footage delivery via high-speed cloud link'
+          ],
+          revisions: 'Pre-production shot list alignment',
+          deliveryTime: 'Raw assets delivered in 48 Hours',
+          highlightBenefit: 'Budget-friendly rapid shoot session'
+        },
+        {
+          tier: 'Professional',
+          name: 'Half-Day Multi-Angle Production',
+          priceINR: '₹54,999',
+          priceNote: 'Most versatile for commercial marketing',
+          isPopular: true,
+          description: 'Complete studio setup with dual cinema cameras, gimbal motion, professional sound recordist, and creative direction.',
+          scope: 'Up to 5 hours / 2 Videographers + Director',
+          deliverables: [
+            'Full storyboard and shoot schedule alignment',
+            'Dual 4K cinema camera angles (A-Cam + B-Cam)',
+            '3-Point wireless cinematic lighting rig',
+            'Boom & wireless lavalier dual redundant audio',
+            'Director on set for interview coaching & pacing',
+            'Curated b-roll, product close-ups & atmospheric cuts'
+          ],
+          revisions: 'Pre-production review + 1 on-site review',
+          deliveryTime: 'Raw & selected takes in 72 Hours',
+          highlightBenefit: 'Broadcast commercial visual fidelity'
+        },
+        {
+          tier: 'Premium',
+          name: 'Full-Day Commercial Cinema Production',
+          priceINR: '₹1,09,999',
+          priceNote: 'Flagship brand films & extensive campaigns',
+          isPopular: false,
+          description: 'Full-scale film crew, motorized slider, drone aerial capture (subject to clearances), teleprompter, and comprehensive coverage.',
+          scope: 'Full Day (8–10 hours) / Full Production Crew',
+          deliverables: [
+            'Multi-location filming coordination',
+            'Cinema camera package with cine prime lens set',
+            'Motorized camera motion slider & motorized gimbal',
+            'Professional teleprompter system for scripted delivery',
+            '4K Drone aerial footage (permitted zones)',
+            'Full sound team, boom operator & multi-track recorder'
+          ],
+          revisions: 'Pre-production creative deck & location scouting',
+          deliveryTime: 'Full archive handover within 5 Days',
+          highlightBenefit: 'Uncompromising cinematic scale'
+        }
+      ],
+      'video-editing': [
+        {
+          tier: 'Starter',
+          name: 'Basic Cuts & Subtitles',
+          priceINR: '₹9,999',
+          priceNote: 'Batch of 3 Reels OR 1 Simple Short Video',
+          isPopular: false,
+          description: 'Clean cuts for talking-head videos, quick social clips, or webinars requiring rapid publishing.',
+          scope: '3 Vertical reels (up to 60s each) OR 1 Short clip',
+          deliverables: [
+            'Rhythm-based pacing cuts removing pauses & filler words',
+            'Modern kinetic animated captions with highlighted keywords',
+            'Royalty-free upbeat background music mixing',
+            'Standard color correction and exposure leveling',
+            'Vertical 9:16 high-bitrate MP4 export'
+          ],
+          revisions: '2 Rounds of revisions per clip',
+          deliveryTime: '3–5 Business Days',
+          highlightBenefit: 'Quick social retention booster'
+        },
+        {
+          tier: 'Professional',
+          name: 'Enhanced Edit with Motion & Sound Design',
+          priceINR: '₹22,999',
+          priceNote: 'Batch of 6 Reels OR 1 Long-Form YouTube Video',
+          isPopular: true,
+          description: 'Elevated post-production with sound effects, dynamic zoom punch-ins, custom lower thirds, and B-roll integration.',
+          scope: '6 Short-Form clips OR 1 Long-form video (up to 12 mins)',
+          deliverables: [
+            'Engaging opening 3-second hook structure',
+            'Curated B-roll overlays, visual memes, and graphics accents',
+            'Custom brand typography, emoji animations & callout badges',
+            'Full sound design (whooshes, pops, impacts, ambient layers)',
+            'Cinematic color grading & skin tone balancing',
+            'Multi-aspect ratio exports (16:9 and 9:16)'
+          ],
+          revisions: '3 Rounds of revisions',
+          deliveryTime: '5–7 Business Days',
+          highlightBenefit: 'Dramatic audience retention lift'
+        },
+        {
+          tier: 'Premium',
+          name: 'Advanced Motion Graphics & Master Narrative',
+          priceINR: '₹48,999',
+          priceNote: 'Monthly Content Retainer OR High-End Commercial',
+          isPopular: false,
+          description: 'Complete post-production suite for flagship brand films, product reveal videos, or high-volume creator channels.',
+          scope: '12 Short-form reels OR 2 Long-form YouTube edits with motion graphics',
+          deliverables: [
+            'Custom 2D motion graphics & infographic overlays',
+            'Custom intro/outro brand stingers and animated titles',
+            'Advanced multi-track audio cleanup, denoising & EQ mastering',
+            'Bespoke color grading matching cinema film profiles',
+            'Thumbnail frame recommendation and raw graphic export',
+            'Dedicated editor WhatsApp/Slack channel & priority queue'
+          ],
+          revisions: '4 Rounds of revisions + priority adjustments',
+          deliveryTime: 'Agreed calendar schedule / 48h turnaround per cut',
+          highlightBenefit: 'Full post-production department on tap'
+        }
+      ],
+      'photo-editing': [
+        {
+          tier: 'Starter',
+          name: 'Small Batch of Image Edits',
+          priceINR: '₹7,999',
+          priceNote: 'Batch of up to 10 images',
+          isPopular: false,
+          description: 'Perfect for founder headshots, small product collections, or clean social media creative updates.',
+          scope: 'Up to 10 photos / graphics',
+          deliverables: [
+            'Professional color temperature & exposure calibration',
+            'Subtle blemish & dust removal',
+            'Clean white or transparent PNG cutouts for e-commerce',
+            'Cropping and aspect ratio optimization for social platforms',
+            'High-res JPEG and WebP export'
+          ],
+          revisions: '2 Rounds of revisions',
+          deliveryTime: '2–4 Business Days',
+          highlightBenefit: 'Crisp, clean photographic polish'
+        },
+        {
+          tier: 'Professional',
+          name: 'Larger Image-Editing & Creative Package',
+          priceINR: '₹17,999',
+          priceNote: 'Batch of 25 images OR 6 Custom Creatives',
+          isPopular: true,
+          description: 'Comprehensive creative assets including marketing posters, high-converting YouTube thumbnails, and multi-platform banners.',
+          scope: '25 Retouched photos OR 6 Bespoke graphic design creatives',
+          deliverables: [
+            'High-end frequency separation retouching for portraits',
+            'Realistic drop-shadow & reflection staging for product photos',
+            '3 High-CTR YouTube thumbnails with expressive typography',
+            'Social media banner suite (LinkedIn, Twitter/X, Instagram)',
+            'Web-optimized image compressions with zero visual quality loss',
+            'Layered source files (PSD) delivered upon completion'
+          ],
+          revisions: '3 Rounds of revisions',
+          deliveryTime: '4–6 Business Days',
+          highlightBenefit: 'Unified multi-channel brand aesthetic'
+        },
+        {
+          tier: 'Premium',
+          name: 'Custom Bulk Editing & Creative Suite',
+          priceINR: '₹39,999',
+          priceNote: 'Bulk catalog (60+ items) OR Full Campaign Collateral',
+          isPopular: false,
+          description: 'Full-scale design package for product catalog launches, brand style refreshes, and seasonal promotional campaigns.',
+          scope: '60+ Product image retouching OR Full 15-asset marketing suite',
+          deliverables: [
+            'Standardized catalog color grading across diverse product SKUs',
+            'Advanced multi-surface reflection mapping and composite staging',
+            'Complete campaign asset kit (banners, ads, hero sliders, posters)',
+            'CMYK high-dpi print-ready formats for event collateral',
+            'Vector asset exports (SVG, EPS, AI) and typography tokens',
+            'Comprehensive digital asset management archive on Google Drive'
+          ],
+          revisions: '4 Rounds of revisions',
+          deliveryTime: '7–12 Business Days',
+          highlightBenefit: 'Turnkey creative department'
+        }
+      ]
+    };
+
+    // ==========================================================================
+    // CRYPTOGRAPHIC AUTHENTICATION & SESSION MANAGEMENT
+    // ==========================================================================
+    async function sha256Hex(message) {
+      const msgBuffer = new TextEncoder().encode(message);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function generateSecureToken() {
+      const array = new Uint8Array(32);
+      window.crypto.getRandomValues(array);
+      return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+    }
+
+    function getLoginLockout() {
+      try {
+        const stored = localStorage.getItem('nexora_admin_lockout');
+        if (!stored) return { locked: false, attempts: 0 };
+        const data = JSON.parse(stored);
+        if (data.lockoutUntil && Date.now() < data.lockoutUntil) {
+          const remainingSecs = Math.ceil((data.lockoutUntil - Date.now()) / 1000);
+          return { locked: true, remainingSecs, attempts: data.attempts || 0 };
+        }
+        if (data.lockoutUntil && Date.now() >= data.lockoutUntil) {
+          localStorage.removeItem('nexora_admin_lockout');
+          return { locked: false, attempts: 0 };
+        }
+        return { locked: false, attempts: data.attempts || 0 };
+      } catch (e) {
+        return { locked: false, attempts: 0 };
+      }
+    }
+
+    function recordFailedAttempt() {
+      const current = getLoginLockout();
+      const newAttempts = (current.attempts || 0) + 1;
+      let lockoutUntil = null;
+      if (newAttempts >= AUTH_CONFIG.maxAttempts) {
+        lockoutUntil = Date.now() + AUTH_CONFIG.lockoutDurationMs;
+      }
+      localStorage.setItem('nexora_admin_lockout', JSON.stringify({
+        attempts: newAttempts,
+        lockoutUntil,
+        lastAttempt: Date.now()
+      }));
+      return { attempts: newAttempts, locked: !!lockoutUntil, lockoutUntil };
+    }
+
+    function clearFailedAttempts() {
+      localStorage.removeItem('nexora_admin_lockout');
+    }
+
+    function checkAuth() {
+      const rawSession = sessionStorage.getItem('nexora_admin_session');
+      let valid = false;
+      if (rawSession) {
+        try {
+          const session = JSON.parse(rawSession);
+          if (session && session.token && session.expiresAt && Date.now() < session.expiresAt && session.phoneHash === AUTH_CONFIG.phoneHash) {
+            valid = true;
+          }
+        } catch (e) {
+          valid = false;
+        }
+      }
+
+      if (valid) {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('dashboard-screen').style.display = 'flex';
+        initDashboard();
+      } else {
+        sessionStorage.removeItem('nexora_admin_session');
+        document.getElementById('login-screen').style.display = 'flex';
+        document.getElementById('dashboard-screen').style.display = 'none';
+      }
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const errBox = document.getElementById('login-error');
+      const lockout = getLoginLockout();
+
+      if (lockout.locked) {
+        errBox.textContent = `🚨 Too many failed attempts. Login locked for security. Please try again in ${lockout.remainingSecs} seconds.`;
+        errBox.style.display = 'block';
+        return;
+      }
+
+      const phoneInput = document.getElementById('login-phone').value.replace(/[^0-9]/g, '');
+      const passInput = document.getElementById('login-password').value.trim();
+
+      if (!phoneInput || !passInput) {
+        errBox.textContent = '❌ Please enter both your admin phone number and security password.';
+        errBox.style.display = 'block';
+        return;
+      }
+
+      // Compute salted cryptographic SHA-256 hashes
+      const enteredPhoneHash = await sha256Hex(AUTH_CONFIG.salt + phoneInput);
+      const enteredPassHash = await sha256Hex(AUTH_CONFIG.salt + passInput);
+
+      // Verify hashes using constant-time comparison
+      if (enteredPhoneHash === AUTH_CONFIG.phoneHash && enteredPassHash === AUTH_CONFIG.passHash) {
+        clearFailedAttempts();
+        errBox.style.display = 'none';
+
+        const session = {
+          token: generateSecureToken(),
+          phoneHash: AUTH_CONFIG.phoneHash,
+          issuedAt: Date.now(),
+          expiresAt: Date.now() + AUTH_CONFIG.sessionDurationMs
+        };
+        sessionStorage.setItem('nexora_admin_session', JSON.stringify(session));
+
+        checkAuth();
+        showToast('✓ Welcome Sahil! Authorized Admin session active.');
+      } else {
+        // Artificial delay (800ms) to defeat high-speed automated brute-force attacks
+        await new Promise(r => setTimeout(r, 800));
+        const rec = recordFailedAttempt();
+        if (rec.locked) {
+          errBox.textContent = `🚨 Security Lockout: ${AUTH_CONFIG.maxAttempts} failed attempts reached. Portal locked for 15 minutes.`;
+        } else {
+          errBox.textContent = `❌ Access Denied: Incorrect phone number or security password. (Attempt ${rec.attempts}/${AUTH_CONFIG.maxAttempts})`;
+        }
+        errBox.style.display = 'block';
+      }
+    }
+
+    function handleLogout() {
+      sessionStorage.removeItem('nexora_admin_session');
+      checkAuth();
+      showToast('Logged out securely.');
+    }
+
+    // Auto-logout expired session monitor
+    setInterval(() => {
+      const rawSession = sessionStorage.getItem('nexora_admin_session');
+      if (rawSession) {
+        try {
+          const session = JSON.parse(rawSession);
+          if (session && session.expiresAt && Date.now() >= session.expiresAt) {
+            handleLogout();
+            showToast('⚠️ Session expired. Please log in again.');
+          }
+        } catch (e) {
+          handleLogout();
+        }
+      }
+    }, 60000);
+
+    // ==========================================================================
+    // TOAST NOTIFICATIONS
+    // ==========================================================================
+    let toastTimeout = null;
+    function showToast(msg) {
+      const toast = document.getElementById('toast-notification');
+      const toastMsg = document.getElementById('toast-message');
+      toastMsg.textContent = msg;
+      toast.style.display = 'flex';
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.style.display = 'none';
+      }, 3500);
+    }
+
+    // ==========================================================================
+    // TABS LOGIC
+    // ==========================================================================
+    function switchTab(tabId) {
+      document.querySelectorAll('.admin-tab').forEach((tab, i) => {
+        tab.classList.toggle('active', tab.getAttribute('onclick').includes(tabId));
+      });
+      document.querySelectorAll('.tab-panel').forEach(panel => {
+        panel.classList.toggle('active', panel.id === `tab-${tabId}`);
+      });
+
+      if (tabId === 'inquiries') renderInquiries();
+      if (tabId === 'services') renderServicesManager();
+      if (tabId === 'pricing') renderPackagesManager();
+      if (tabId === 'contacts') loadContactSettings();
+    }
+
+    // ==========================================================================
+    // DATA ACCESS HELPERS
+    // ==========================================================================
+    function getContacts() {
+      try {
+        const stored = localStorage.getItem('nexora_contacts');
+        if (stored) return { ...DEFAULT_CONTACTS, ...JSON.parse(stored) };
+      } catch (e) {}
+      return DEFAULT_CONTACTS;
+    }
+    function saveContacts(contacts) {
+      localStorage.setItem('nexora_contacts', JSON.stringify(contacts));
+    }
+
+    function getServices() {
+      try {
+        const stored = localStorage.getItem('nexora_services');
+        if (stored) return JSON.parse(stored);
+      } catch (e) {}
+      return DEFAULT_SERVICES;
+    }
+    function saveServices(services) {
+      localStorage.setItem('nexora_services', JSON.stringify(services));
+    }
+
+    function getPackages() {
+      try {
+        const stored = localStorage.getItem('nexora_packages');
+        if (stored) return JSON.parse(stored);
+      } catch (e) {}
+      return DEFAULT_PACKAGES;
+    }
+    function savePackages(packages) {
+      localStorage.setItem('nexora_packages', JSON.stringify(packages));
+    }
+
+    function getInquiries() {
+      try {
+        const stored = localStorage.getItem('nexora_inquiries');
+        if (stored) return JSON.parse(stored);
+      } catch (e) {}
+      return [];
+    }
+    function saveInquiries(inquiries) {
+      localStorage.setItem('nexora_inquiries', JSON.stringify(inquiries));
+    }
+
+    // ==========================================================================
+    // TAB 1: INQUIRIES MANAGEMENT
+    // ==========================================================================
+    function renderInquiries() {
+      const container = document.getElementById('inquiries-list-container');
+      const inquiries = getInquiries();
+      const badge = document.getElementById('inquiries-counter-badge');
+      const totalStat = document.getElementById('stat-total-inquiries');
+      const newStat = document.getElementById('stat-new-inquiries');
+
+      const newCount = inquiries.filter(i => (i.status || 'New') === 'New').length;
+      badge.textContent = inquiries.length;
+      totalStat.textContent = inquiries.length;
+      newStat.textContent = newCount;
+
+      if (!inquiries.length) {
+        container.innerHTML = `
+          <div class="data-card" style="text-align:center; padding: 48px 24px;">
+            <div style="font-size:36px; margin-bottom:12px;">📬</div>
+            <h3 style="font-size:18px; margin-bottom:8px;">No inquiries received yet</h3>
+            <p style="color:var(--text-muted); font-size:13.5px; max-width:440px; margin:0 auto 20px;">
+              When clients submit inquiries through the contact form on your main website, they will automatically appear here with their phone numbers and requested services.
+            </p>
+            ${DEBUG_MODE ? `
+              <button onclick="addTestInquiry()" class="btn-primary" style="width:auto; display:inline-flex;">
+                ➕ Click to Add a Test Inquiry
+              </button>
+            ` : '<div style="font-size:12px; color:var(--text-dim);">Awaiting client inquiries via web form.</div>'}
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = inquiries.map((inq, index) => {
+        const cleanPhone = (inq.phone || '').replace(/[^0-9]/g, '');
+        const isNew = (inq.status || 'New') === 'New';
+        const safeEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(inq.email || '') ? inq.email : '';
+        return `
+          <div class="inquiry-card">
+            <div class="inquiry-card-header">
+              <div>
+                <div class="client-name">${escapeHtml(inq.name || 'Anonymous Client')}</div>
+                <div class="inquiry-badges">
+                  <span class="badge-service">${escapeHtml(inq.service || 'Web Development')}</span>
+                  <span class="badge-budget">Budget: ${escapeHtml(inq.budget || 'Custom')}</span>
+                  <span class="badge-status ${isNew ? 'new' : 'contacted'}">${escapeHtml(inq.status || 'New')}</span>
+                </div>
+              </div>
+
+              <div style="text-align:right;">
+                <div class="inquiry-time">${escapeHtml(inq.timestamp || 'Recently')}</div>
+                <button onclick="deleteInquiry(${index})" class="btn-danger" style="margin-top:8px; padding:4px 8px; font-size:11px;">
+                  ✕ Delete
+                </button>
+              </div>
+            </div>
+
+            <div class="inquiry-contact-links">
+              <div>
+                📞 Phone: ${cleanPhone ? `<a href="tel:${cleanPhone}"><strong>${escapeHtml(inq.phone || 'N/A')}</strong></a>` : escapeHtml(inq.phone || 'N/A')}
+              </div>
+              ${cleanPhone ? `
+                <div>
+                  💬 WhatsApp: <a href="https://wa.me/${cleanPhone}?text=${encodeURIComponent('Hello ' + (inq.name || '') + '! Thank you for contacting Nexora Agency regarding ' + (inq.service || 'your project') + '.')}" target="_blank" rel="noopener noreferrer" style="color:#25D366;">Chat on WhatsApp</a>
+                </div>
+              ` : ''}
+              <div>
+                ✉️ Email: ${safeEmail ? `<a href="mailto:${encodeURIComponent(safeEmail)}">${escapeHtml(safeEmail)}</a>` : escapeHtml(inq.email || 'N/A')}
+              </div>
+            </div>
+
+            ${inq.description ? `
+              <div class="inquiry-message">
+                <strong>Project Details:</strong> ${escapeHtml(inq.description)}
+              </div>
+            ` : ''}
+
+            <div class="inquiry-actions">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:12px; color:var(--text-muted);">Lead Status:</span>
+                <select onchange="updateInquiryStatus(${index}, this.value)" class="form-select" style="padding:4px 10px; font-size:12px; width:auto;">
+                  <option value="New" ${inq.status === 'New' ? 'selected' : ''}>🟡 New Lead</option>
+                  <option value="Contacted" ${inq.status === 'Contacted' ? 'selected' : ''}>🔵 Contacted</option>
+                  <option value="Proposal Sent" ${inq.status === 'Proposal Sent' ? 'selected' : ''}>🟣 Proposal Sent</option>
+                  <option value="Closed / Won" ${inq.status === 'Closed / Won' ? 'selected' : ''}>🟢 Closed / Won</option>
+                </select>
+              </div>
+
+              <div style="display:flex; gap:8px;">
+                ${cleanPhone ? `
+                  <a href="tel:${cleanPhone}" class="btn-secondary" style="padding:6px 12px; font-size:12px;">Call Directly</a>
+                  <a href="https://wa.me/${cleanPhone}" target="_blank" class="btn-success" style="padding:6px 12px; font-size:12px; background:#25D366;">WhatsApp</a>
+                ` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateInquiryStatus(index, status) {
+      const inquiries = getInquiries();
+      if (inquiries[index]) {
+        inquiries[index].status = status;
+        saveInquiries(inquiries);
+        renderInquiries();
+        showToast(`Lead status updated to: ${status}`);
+      }
+    }
+
+    function deleteInquiry(index) {
+      if (!confirm('Are you sure you want to delete this client inquiry?')) return;
+      const inquiries = getInquiries();
+      inquiries.splice(index, 1);
+      saveInquiries(inquiries);
+      renderInquiries();
+      showToast('Inquiry deleted.');
+    }
+
+    function clearAllInquiries() {
+      if (!confirm('Warning: Are you sure you want to remove ALL inquiries?')) return;
+      saveInquiries([]);
+      renderInquiries();
+      showToast('All inquiries cleared.');
+    }
+
+    function addTestInquiry() {
+      if (!DEBUG_MODE) {
+        showToast('ℹ️ Debug test leads are disabled in production mode.');
+        return;
+      }
+      const sampleNames = ['Rohan Verma', 'Ananya Gupta', 'Vikramaditya Roy', 'Priya Deshmukh'];
+      const sampleServices = ['Web Development', 'Authorized Cybersecurity', 'Video Shooting & Production', 'Video Editing & Motion'];
+      const sampleBudgets = ['₹35,000 – ₹70,000', '₹70,000 – ₹1,50,000', '₹15,000 – ₹35,000'];
+      const randIdx = Math.floor(Math.random() * sampleNames.length);
+
+      const inq = {
+        id: 'inq_' + Date.now(),
+        name: sampleNames[randIdx],
+        phone: '+91 98' + Math.floor(10000000 + Math.random() * 90000000),
+        email: sampleNames[randIdx].toLowerCase().replace(' ', '.') + '@gmail.com',
+        service: sampleServices[randIdx],
+        budget: sampleBudgets[randIdx % sampleBudgets.length],
+        description: 'Need assistance building a high-performance digital presence with custom branding and video assets.',
+        timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'short' }),
+        status: 'New'
+      };
+
+      const inquiries = getInquiries();
+      inquiries.unshift(inq);
+      saveInquiries(inquiries);
+      renderInquiries();
+      showToast('Test client lead added! Click to view.');
+    }
+
+    function sanitizeCsvCell(val) {
+      let str = String(val == null ? '' : val);
+      // OWASP CWE-1236 Formula Injection Neutralization: =, +, -, @, tab, newline
+      if (/^[=+\-@\t\r\n]/.test(str)) {
+        str = "'" + str;
+      }
+      return `"${str.replace(/"/g, '""')}"`;
+    }
+
+    function exportInquiriesCSV() {
+      const inquiries = getInquiries();
+      if (!inquiries.length) {
+        showToast('ℹ️ No inquiries to export.');
+        return;
+      }
+      let csv = 'Name,Phone,Email,Service,Budget,Status,Date,Description\n';
+      inquiries.forEach(i => {
+        csv += `${sanitizeCsvCell(i.name)},${sanitizeCsvCell(i.phone)},${sanitizeCsvCell(i.email)},${sanitizeCsvCell(i.service)},${sanitizeCsvCell(i.budget)},${sanitizeCsvCell(i.status)},${sanitizeCsvCell(i.timestamp)},${sanitizeCsvCell(i.description)}\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `nexora_inquiries_${Date.now()}.csv`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      showToast('✓ Secure CSV exported successfully.');
+    }
+
+    // ==========================================================================
+    // TAB 2: SERVICES & WORK CARDS MANAGER
+    // ==========================================================================
+    function renderServicesManager() {
+      const container = document.getElementById('services-cards-container');
+      const services = getServices();
+      const badge = document.getElementById('services-counter-badge');
+      badge.textContent = services.length;
+
+      container.innerHTML = services.map((s, idx) => `
+        <div class="service-edit-card">
+          <div>
+            <span class="service-edit-tag" style="background:${s.tagBg || 'rgba(47, 105, 255, 0.15)'}; color:${s.tagColor || '#93b3ff'};">
+              ${escapeHtml(s.tag || 'Service')}
+            </span>
+            <h3 class="service-edit-title">${escapeHtml(s.name)}</h3>
+            <p style="font-size:13px; color:var(--text-muted); line-height:1.5; margin-bottom:12px;">
+              ${escapeHtml(s.desc)}
+            </p>
+
+            <ul style="list-style:none; display:flex; flex-direction:column; gap:6px; font-size:12.5px; color:#cbd5e1; margin-bottom:16px;">
+              ${(s.deliverables || []).map(d => `<li>✓ ${escapeHtml(d)}</li>`).join('')}
+            </ul>
+          </div>
+
+          <div style="border-top:1px solid var(--border-subtle); padding-top:14px; margin-top:auto;">
+            <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:12px;">
+              <div>
+                <div class="service-edit-price">${escapeHtml(s.startingPrice)}</div>
+                <span style="font-family:var(--font-mono); font-size:10px; color:var(--text-dim);">${escapeHtml(s.priceNote || 'Starting price')}</span>
+              </div>
+              <span style="font-family:var(--font-mono); font-size:11px; color:var(--text-dim);">Tab: ${escapeHtml(s.categoryTab || 'web-development')}</span>
+            </div>
+
+            <div style="display:flex; gap:10px;">
+              <button onclick="editServiceCard(${idx})" class="btn-secondary" style="flex:1; justify-content:center; padding:8px; font-size:12.5px;">
+                ✏️ Edit Card
+              </button>
+              <button onclick="deleteServiceCard(${idx})" class="btn-danger" style="padding:8px 12px;">
+                🗑️
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openNewServiceModal() {
+      document.getElementById('service-modal-title').textContent = 'Add New Work / Service Card';
+      document.getElementById('service-edit-id').value = 'new';
+      document.getElementById('service-input-name').value = '';
+      document.getElementById('service-input-tag').value = '';
+      document.getElementById('service-input-price').value = '₹19,999';
+      document.getElementById('service-input-note').value = 'Starting price';
+      document.getElementById('service-input-tab').value = 'web-development';
+      document.getElementById('service-input-desc').value = '';
+      document.getElementById('service-input-deliverables').value = '';
+      document.getElementById('service-modal').classList.add('open');
+    }
+
+    function editServiceCard(index) {
+      const services = getServices();
+      const s = services[index];
+      if (!s) return;
+      document.getElementById('service-modal-title').textContent = 'Edit Service: ' + s.name;
+      document.getElementById('service-edit-id').value = String(index);
+      document.getElementById('service-input-name').value = s.name || '';
+      document.getElementById('service-input-tag').value = s.tag || '';
+      document.getElementById('service-input-price').value = s.startingPrice || '';
+      document.getElementById('service-input-note').value = s.priceNote || 'Starting price';
+      document.getElementById('service-input-tab').value = s.categoryTab || 'web-development';
+      document.getElementById('service-input-desc').value = s.desc || '';
+      document.getElementById('service-input-deliverables').value = (s.deliverables || []).join('\n');
+      document.getElementById('service-modal').classList.add('open');
+    }
+
+    function closeServiceModal() {
+      document.getElementById('service-modal').classList.remove('open');
+    }
+
+    function saveServiceCard(e) {
+      e.preventDefault();
+      const editId = document.getElementById('service-edit-id').value;
+      const name = document.getElementById('service-input-name').value.trim();
+      const tag = document.getElementById('service-input-tag').value.trim();
+      const startingPrice = document.getElementById('service-input-price').value.trim();
+      const priceNote = document.getElementById('service-input-note').value.trim();
+      const categoryTab = document.getElementById('service-input-tab').value;
+      const desc = document.getElementById('service-input-desc').value.trim();
+      const deliverables = document.getElementById('service-input-deliverables').value
+        .split('\n')
+        .map(l => l.trim())
+        .filter(l => l.length > 0);
+
+      const services = getServices();
+
+      if (editId === 'new') {
+        const newObj = {
+          id: 'custom-' + Date.now(),
+          tag,
+          tagBg: 'rgba(47, 105, 255, 0.15)',
+          tagColor: '#93b3ff',
+          name,
+          desc,
+          startingPrice,
+          priceNote,
+          categoryTab,
+          deliverables
+        };
+        services.push(newObj);
+        showToast(`✓ New service card "${name}" created and live on main page!`);
+      } else {
+        const idx = parseInt(editId, 10);
+        if (services[idx]) {
+          services[idx].name = name;
+          services[idx].tag = tag;
+          services[idx].startingPrice = startingPrice;
+          services[idx].priceNote = priceNote;
+          services[idx].categoryTab = categoryTab;
+          services[idx].desc = desc;
+          services[idx].deliverables = deliverables;
+          showToast(`✓ Service card "${name}" updated! Price: ${startingPrice}`);
+        }
+      }
+
+      saveServices(services);
+      closeServiceModal();
+      renderServicesManager();
+    }
+
+    function deleteServiceCard(index) {
+      const services = getServices();
+      const name = services[index]?.name || 'Card';
+      if (!confirm(`Are you sure you want to delete the service card "${name}" from the homepage?`)) return;
+      services.splice(index, 1);
+      saveServices(services);
+      renderServicesManager();
+      showToast(`Service "${name}" removed from main site.`);
+    }
+
+    // ==========================================================================
+    // TAB 3: PRICING & PACKAGES MANAGER
+    // ==========================================================================
+    let activePricingCategory = 'web-development';
+
+    function switchPricingCategory(cat) {
+      activePricingCategory = cat;
+      document.querySelectorAll('.pkg-cat-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.cat === cat);
+      });
+      renderPackagesManager();
+    }
+
+    function renderPackagesManager() {
+      const container = document.getElementById('packages-cards-container');
+      const allPackages = getPackages();
+      const pkgs = allPackages[activePricingCategory] || [];
+
+      if (!pkgs.length) {
+        container.innerHTML = `<div class="data-card" style="grid-column:1/-1; text-align:center;">No packages found for this category.</div>`;
+        return;
+      }
+
+      container.innerHTML = pkgs.map((p, idx) => `
+        <div class="pkg-edit-card ${p.isPopular ? 'popular' : ''}">
+          ${p.isPopular ? '<span class="popular-tag">MOST POPULAR</span>' : ''}
+          <div style="font-family:var(--font-mono); font-size:11px; color:var(--accent-blue); font-weight:700; text-transform:uppercase; margin-bottom:4px;">
+            ${escapeHtml(p.tier)} Tier
+          </div>
+          <h3 style="font-family:var(--font-raleway); font-size:18px; font-weight:700; color:#fff; margin-bottom:8px;">
+            ${escapeHtml(p.name)}
+          </h3>
+
+          <div style="font-family:var(--font-display); font-size:28px; font-weight:800; color:#ffffff; margin-bottom:2px;">
+            ${escapeHtml(p.priceINR)}
+          </div>
+          <div style="font-family:var(--font-mono); font-size:11px; color:var(--text-dim); margin-bottom:12px;">
+            ${escapeHtml(p.priceNote || '')}
+          </div>
+
+          <p style="font-size:13px; color:var(--text-muted); line-height:1.5; margin-bottom:16px;">
+            ${escapeHtml(p.description || '')}
+          </p>
+
+          <div style="font-family:var(--font-mono); font-size:11.5px; color:#cbd5e1; display:flex; justify-content:space-between; margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid var(--border-subtle);">
+            <span>⏱ ${escapeHtml(p.deliveryTime || 'Standard')}</span>
+            <span>🔄 ${escapeHtml(p.revisions || '2 Rounds')}</span>
+          </div>
+
+          <ul style="list-style:none; display:flex; flex-direction:column; gap:6px; font-size:12.5px; color:#cbd5e1; margin-bottom:20px;">
+            ${(p.deliverables || []).map(d => `<li>✓ ${escapeHtml(d)}</li>`).join('')}
+          </ul>
+
+          <div style="margin-top:auto;">
+            <button onclick="editPackageTier(${idx})" class="btn-primary" style="padding:10px; font-size:13px;">
+              ✏️ Edit ${escapeHtml(p.tier)} Package & Price
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function editPackageTier(index) {
+      const allPackages = getPackages();
+      const p = allPackages[activePricingCategory][index];
+      if (!p) return;
+
+      document.getElementById('pkg-modal-title').textContent = `Edit ${p.tier} Package — ${p.name}`;
+      document.getElementById('pkg-edit-cat').value = activePricingCategory;
+      document.getElementById('pkg-edit-index').value = String(index);
+
+      document.getElementById('pkg-input-tier').value = p.tier || '';
+      document.getElementById('pkg-input-name').value = p.name || '';
+      document.getElementById('pkg-input-price').value = p.priceINR || '';
+      document.getElementById('pkg-input-note').value = p.priceNote || '';
+      document.getElementById('pkg-input-popular').checked = !!p.isPopular;
+      document.getElementById('pkg-input-desc').value = p.description || '';
+      document.getElementById('pkg-input-delivery').value = p.deliveryTime || '';
+      document.getElementById('pkg-input-revisions').value = p.revisions || '';
+      document.getElementById('pkg-input-deliverables').value = (p.deliverables || []).join('\n');
+
+      document.getElementById('pkg-modal').classList.add('open');
+    }
+
+    function closePkgModal() {
+      document.getElementById('pkg-modal').classList.remove('open');
+    }
+
+    function savePackageTier(e) {
+      e.preventDefault();
+      const cat = document.getElementById('pkg-edit-cat').value;
+      const idx = parseInt(document.getElementById('pkg-edit-index').value, 10);
+      const allPackages = getPackages();
+
+      if (!allPackages[cat] || !allPackages[cat][idx]) return;
+
+      const p = allPackages[cat][idx];
+      p.tier = document.getElementById('pkg-input-tier').value.trim();
+      p.name = document.getElementById('pkg-input-name').value.trim();
+      p.priceINR = document.getElementById('pkg-input-price').value.trim();
+      p.priceNote = document.getElementById('pkg-input-note').value.trim();
+      p.isPopular = document.getElementById('pkg-input-popular').checked;
+      p.description = document.getElementById('pkg-input-desc').value.trim();
+      p.deliveryTime = document.getElementById('pkg-input-delivery').value.trim();
+      p.revisions = document.getElementById('pkg-input-revisions').value.trim();
+      p.deliverables = document.getElementById('pkg-input-deliverables').value
+        .split('\n')
+        .map(l => l.trim())
+        .filter(l => l.length > 0);
+
+      // If set as popular, remove popular flag from siblings
+      if (p.isPopular) {
+        allPackages[cat].forEach((item, i) => {
+          if (i !== idx) item.isPopular = false;
+        });
+      }
+
+      savePackages(allPackages);
+      closePkgModal();
+      renderPackagesManager();
+      showToast(`✓ Package updated! Price changed to: ${p.priceINR}`);
+    }
+
+    // ==========================================================================
+    // TAB 4: CONTACT & PHONE SETTINGS
+    // ==========================================================================
+    function loadContactSettings() {
+      const contacts = getContacts();
+      document.getElementById('setting-direct-phone').value = contacts.directPhone || '';
+      document.getElementById('setting-direct-phone-clean').value = contacts.directPhoneClean || '';
+      document.getElementById('setting-whatsapp-phone').value = contacts.whatsappPhone || '';
+      document.getElementById('setting-whatsapp-phone-clean').value = contacts.whatsappPhoneClean || '';
+      document.getElementById('setting-email').value = contacts.officialEmail || '';
+      document.getElementById('setting-location').value = contacts.location || '';
+      document.getElementById('setting-hours').value = contacts.workingHours || '';
+      document.getElementById('setting-badge').value = contacts.availabilityBadge || '';
+      document.getElementById('stat-contact-phone').textContent = contacts.directPhone || '+91 85955 81933';
+    }
+
+    function saveContactSettings(e) {
+      e.preventDefault();
+      const updated = {
+        directPhone: document.getElementById('setting-direct-phone').value.trim(),
+        directPhoneClean: document.getElementById('setting-direct-phone-clean').value.trim().replace(/[^0-9]/g, ''),
+        whatsappPhone: document.getElementById('setting-whatsapp-phone').value.trim(),
+        whatsappPhoneClean: document.getElementById('setting-whatsapp-phone-clean').value.trim().replace(/[^0-9]/g, ''),
+        officialEmail: document.getElementById('setting-email').value.trim(),
+        location: document.getElementById('setting-location').value.trim(),
+        workingHours: document.getElementById('setting-hours').value.trim(),
+        availabilityBadge: document.getElementById('setting-badge').value.trim()
+      };
+
+      saveContacts(updated);
+      document.getElementById('stat-contact-phone').textContent = updated.directPhone;
+      showToast('✓ Contact details saved! All phone buttons & links updated live.');
+    }
+
+    function restoreDefaultContacts() {
+      if (!confirm('Reset contact numbers to studio defaults (+91 85955 81933 / +91 87458 44797)?')) return;
+      saveContacts(DEFAULT_CONTACTS);
+      loadContactSettings();
+      showToast('Contact information restored to defaults.');
+    }
+
+    // ==========================================================================
+    // TAB 5: BACKUP & FACTORY RESET
+    // ==========================================================================
+    function exportFullBackupJSON() {
+      const backupData = {
+        exportedAt: new Date().toISOString(),
+        contacts: getContacts(),
+        services: getServices(),
+        packages: getPackages(),
+        inquiries: getInquiries()
+      };
+      const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `nexora_studio_backup_${Date.now()}.json`;
+      a.click();
+    }
+
+    function restoreAllFactoryDefaults() {
+      if (!confirm('Are you sure you want to restore original factory prices and services? All your price changes will reset to the original amounts.')) return;
+      localStorage.removeItem('nexora_services');
+      localStorage.removeItem('nexora_packages');
+      localStorage.removeItem('nexora_contacts');
+      initDashboard();
+      showToast('✓ Factory defaults restored successfully!');
+    }
+
+    async function generateNewCredentialHashes() {
+      const p = document.getElementById('sec-input-phone').value.replace(/[^0-9]/g, '');
+      const pass = document.getElementById('sec-input-pass').value.trim();
+      const out = document.getElementById('sec-hash-output');
+      if (!p || !pass) {
+        alert('Please enter both a phone number and new password.');
+        return;
+      }
+      const phoneH = await sha256Hex(AUTH_CONFIG.salt + p);
+      const passH = await sha256Hex(AUTH_CONFIG.salt + pass);
+      out.style.display = 'block';
+      out.innerHTML = `
+        <div style="color:#10b981; font-weight:700; margin-bottom:6px;">✓ Salted Hashes Generated Successfully:</div>
+        <div style="color:#94a3b8; margin-bottom:4px;">phoneHash: <span style="color:#38bdf8;">'${phoneH}'</span></div>
+        <div style="color:#94a3b8;">passHash: <span style="color:#38bdf8;">'${passH}'</span></div>
+        <div style="margin-top:8px; color:var(--text-dim); font-size:10px;">Copy these hashes into AUTH_CONFIG in admin.html or your production .env variables.</div>
+      `;
+      showToast('✓ Cryptographic hashes generated!');
+    }
+
+    // ==========================================================================
+    // UTILITY & INITIALIZATION
+    // ==========================================================================
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function initDashboard() {
+      renderInquiries();
+      renderServicesManager();
+      renderPackagesManager();
+      loadContactSettings();
+    }
+
+    // Window load entry
+    window.addEventListener('DOMContentLoaded', () => {
+      checkAuth();
+    });
+  </script>
+</body>
+</html>
